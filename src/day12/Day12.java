@@ -29,10 +29,8 @@ public class Day12 {
 
 	private void solve(String inputData) throws IOException {
 		List<String> dataList = readData(inputData);
-		// int solution = solvePart1(dataList);
-		// System.out.println("Solution for part 1: " + solution);
-		int solution = solvePart1_dijkstra(dataList);
-		System.out.println("Solution for part 1 with Dijkstra: " + solution);
+		int solution = solvePart1(dataList);
+		System.out.println("Solution for part 1: " + solution);
 		solution = solvePart2(dataList);
 		System.out.println("Solution for part 2: " + solution);
 	}
@@ -57,7 +55,7 @@ public class Day12 {
 		return neighbors;
 	}
 
-	public int solvePart1_dijkstra(List<String> dataList) {
+	public int solvePart1(List<String> dataList) {
 		int width = dataList.get(0).length(); // Anzahl Spalten
 		int rows = dataList.size(); // Anzahl Zeilen
 		String zielknoten = "";
@@ -92,7 +90,7 @@ public class Day12 {
 				}
 			}
 			Q.remove(keySmallest);
-			if (keySmallest == zielknoten) {
+			if (keySmallest.equals(zielknoten)) {
 				break;
 			}
 			for (String item : neighbors(keySmallest, rows, width, arrayOfHeights)) {
@@ -118,136 +116,94 @@ public class Day12 {
 	}
 
 	boolean neighborIsReachable(Character neighborFrom, Character neighborTo) {
-		if (neighborFrom.equals('S')) {
-			if (neighborTo.equals('a') || neighborTo.equals('b')) {
-				return true;
-			}
+		HashMap<Character, Integer> zuordnung = new HashMap<>();
+		int i = 0;
+		for (Character c = 'a'; c <= 'z'; c++) {
+			zuordnung.put(c, i);
+			i++;
 		}
-		if (neighborTo.equals('E')) {
-			if (neighborFrom.equals('y') || neighborFrom.equals('z')) {
-				return true;
-			}
-		}
-		if ((int) neighborTo - neighborFrom < 2 && neighborTo != 'E' && neighborTo != 'S' && neighborFrom != 'E'
-				&& neighborFrom != 'S') {
+		zuordnung.put('S', 0);
+		zuordnung.put('E', 25);
+		if (zuordnung.get(neighborTo) - zuordnung.get(neighborFrom) < 2) {
 			return true;
 		}
 		return false;
 	}
 
-	static int maxCosts = Integer.MAX_VALUE;
+	Character[][] arrayOfHeights;
+	int width;
+	int rows;
+	String zielknoten = "";
 
-	int solvePart1(List<String> dataList) {
-		int width = dataList.get(0).length(); // Anzahl Spalten
-		int rows = dataList.size(); // Anzahl Zeilen
-		Character[][] arrayOfHeights = new Character[rows][width];
+	public int solvePart2(List<String> dataList) {
+		HashSet<String> Startknoten = new HashSet<>();
+		width = dataList.get(0).length(); // Anzahl Spalten
+		rows = dataList.size(); // Anzahl Zeilen
+		arrayOfHeights = new Character[rows][width];
+		int smallestPath = Integer.MAX_VALUE;
+		int pathLength = Integer.MAX_VALUE;
 		for (int j = 0; j < rows; j++) {
 			String line = dataList.get(j);
 			for (int i = 0; i < width; i++) {
 				Character charAtPos = line.charAt(i);
 				arrayOfHeights[j][i] = charAtPos;
-			}
-		}
-		boolean moving = true;
-		while (moving) {
-			for (int j = 0; j < rows; j++) {
-				for (int i = 0; i < width; i++) {
-					if (arrayOfHeights[j][i] == 'S') {
-						visited.add("(0,0)");
-						nextNeighbor(j, i, arrayOfHeights, 0);
-						moving = false;
-					}
+				String member = "(" + j + "," + i + ")";
+				if (charAtPos == 'a' || charAtPos == 'S') {
+					Startknoten.add(member);
+				}
+				if (charAtPos == 'E') {
+					zielknoten = member;
 				}
 			}
 		}
-		return maxCosts - 1;
+		for (String start : Startknoten) {
+			pathLength = dijkstra(dataList, start);
+			if (pathLength < smallestPath) {
+				smallestPath = pathLength;
+			}
+		}
+		return smallestPath;
 	}
 
-	static int count = 0;
-	List<String> visited = new ArrayList<>();
-
-	private int nextNeighbor(int j, int i, Character[][] arrayOfHeights, int sum) {
-		count++;
-		String member = "(" + j + "," + i + ")";
-		if (count % 1000000 == 0) {
-			System.out.println(count + member + arrayOfHeights[j][i]);
+	int dijkstra(List<String> dataList, String start) {
+		HashMap<String, Integer> distances = new HashMap<>();
+		HashMap<String, String> predecessors = new HashMap<>();
+		HashSet<String> Q = new HashSet<>();
+		for (int j = 0; j < rows; j++) {
+			String line = dataList.get(j);
+			for (int i = 0; i < width; i++) {
+				Character charAtPos = line.charAt(i);
+				arrayOfHeights[j][i] = charAtPos;
+				String member = "(" + j + "," + i + ")";
+				distances.put(member, Integer.MAX_VALUE);
+				predecessors.put(member, null);
+				Q.add(member);
+			}
 		}
-		int width = arrayOfHeights[0].length;
-		int rows = arrayOfHeights.length;
-		Character fromChar, neighbor;
-		int cost = sum;
-		fromChar = arrayOfHeights[j][i];
-		if (fromChar == 'E') {
-			if (maxCosts > cost) {
-				maxCosts = cost;
-			}
-			visited.remove(member);
-			return cost;
-		}
-		if (cost < maxCosts) {
-			if (j + 1 < rows) { // nach unten
-				int index1 = j + 1;
-				int index2 = i;
-				neighbor = arrayOfHeights[j + 1][i];
-				member = "(" + index1 + "," + index2 + ")";
-				if (!visited.contains(member)) {
-					if (neighborIsReachable(fromChar, neighbor)) {
-						visited.add(member);
-						cost++;
-						nextNeighbor(j + 1, i, arrayOfHeights, cost);
-						visited.remove(member);
-					}
-				}
-			}
-			// nach rechts
-			if (i + 1 < width) {
-				neighbor = arrayOfHeights[j][i + 1];
-				int index2 = i + 1;
-				member = "(" + j + "," + index2 + ")";
-				if (!visited.contains(member)) {
-					if (neighborIsReachable(fromChar, neighbor)) {
-						visited.add(member);
-						cost++;
-						nextNeighbor(j, i + 1, arrayOfHeights, cost);
-						visited.remove(member);
-					}
-				}
-			}
-			if (j > 0) { // nach oben
-				neighbor = arrayOfHeights[j - 1][i];
-				int index1 = j - 1;
-				member = "(" + index1 + "," + i + ")";
-				if (!visited.contains(member)) {
+		distances.put(start, 0);
 
-					if (neighborIsReachable(fromChar, neighbor)) {
-						visited.add(member);
-						cost++;
-						nextNeighbor(j - 1, i, arrayOfHeights, cost);
-						visited.remove(member);
-					}
+		while (!Q.isEmpty()) {
+			int smallest = Integer.MAX_VALUE;
+			String keySmallest = null;
+			for (String entry : Q) {
+				if (smallest > distances.get(entry)) {
+					smallest = distances.get(entry);
+					keySmallest = entry;
 				}
 			}
-			// nach links
-			if (i > 0) {
-				neighbor = arrayOfHeights[j][i - 1];
-				int index1 = j;
-				int index2 = i - 1;
-				member = "(" + index1 + "," + index2 + ")";
-				if (!visited.contains(member)) {
-
-					if (neighborIsReachable(fromChar, neighbor)) {
-						visited.add(member);
-						cost++;
-						nextNeighbor(j, i - 1, arrayOfHeights, cost);
-						visited.remove(member);
-					}
+			Q.remove(keySmallest);
+			if (keySmallest == null)
+				break;
+			if (keySmallest.equals(zielknoten)) {
+				break;
+			}
+			for (String item : neighbors(keySmallest, rows, width, arrayOfHeights)) {
+				if (Q.contains(item)) {
+					distance_update(keySmallest, item, distances, predecessors);
 				}
 			}
 		}
-		return cost;
+		return distances.get(zielknoten);
 	}
 
-	int solvePart2(List<String> dataList) {
-		return 0;
-	}
 }

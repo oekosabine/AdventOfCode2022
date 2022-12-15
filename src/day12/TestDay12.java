@@ -19,27 +19,19 @@ class TestDay12 {
 		testDaten.add("accszExk");
 		testDaten.add("acctuvwj");
 		testDaten.add("abdefghi");
-		assertTrue(testInstance.solvePart1_dijkstra(testDaten) == 31);
+		assertTrue(testInstance.solvePart1(testDaten) == 31);
 	}
 
 	@Test
 	void test_part2() {
 		Day12 testInstance = new Day12();
 		List<String> testDaten = new ArrayList<String>();
-		testDaten.add("mjqjpqmgbljsphdztnvjfqwrcgsmlb");
-		assertTrue(testInstance.solvePart2(testDaten) == 19);
-		testDaten = new ArrayList<String>();
-		testDaten.add("bvwbjplbgvbhsrlpgdmjqwftvncz");
-		assertTrue(testInstance.solvePart2(testDaten) == 23);
-		testDaten = new ArrayList<String>();
-		testDaten.add("nppdvjthqldpwncqszvftbrmjlhg");
-		assertTrue(testInstance.solvePart2(testDaten) == 23);
-		testDaten = new ArrayList<String>();
-		testDaten.add("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg");
+		testDaten.add("Sabqponm");
+		testDaten.add("abcryxxl");
+		testDaten.add("accszExk");
+		testDaten.add("acctuvwj");
+		testDaten.add("abdefghi");
 		assertTrue(testInstance.solvePart2(testDaten) == 29);
-		testDaten = new ArrayList<String>();
-		testDaten.add("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw");
-		assertTrue(testInstance.solvePart2(testDaten) == 26);
 	}
 
 	@Test
@@ -47,8 +39,8 @@ class TestDay12 {
 		Day12 testInstance = new Day12();
 		List<String> testDaten = testInstance
 				.readData("C:\\Users\\boehm\\eclipse-workspace\\AdventOfCode2022\\src\\day12\\input.txt");
-		assertTrue(testInstance.solvePart1(testDaten) == 1542);
-		assertTrue(testInstance.solvePart2(testDaten) == 3153);
+		assertTrue(testInstance.solvePart1(testDaten) == 528);
+		assertTrue(testInstance.solvePart2(testDaten) == 522);
 	}
 
 }
