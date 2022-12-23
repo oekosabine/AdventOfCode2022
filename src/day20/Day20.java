@@ -39,128 +39,97 @@ public class Day20 {
 		System.out.println("Solution for part 2: " + solution);
 	}
 
-	int[] coordinates;
-	int[] coordinates_copy;
-	HashMap<Integer, Integer> where_is_it = new HashMap<>();
+	private class Number {
+		int value;
+		int original_position;
+		int current_position;
+	}
+
+	Number coordinates_as_struct[];
 
 	public int solvePart1(List<String> dataList) {
-		coordinates = new int[dataList.size()];
+		int length = dataList.size();
+		coordinates_as_struct = new Number[length];
 		int i = 0;
 		for (String line : dataList) {
 			Integer number = Integer.parseInt(line);
-			coordinates[i] = number;
+			Number item = new Number();
+			item.current_position = i;
+			item.original_position = i;
+			item.value = number;
+			coordinates_as_struct[i] = item;
 			i++;
 		}
-		int length = coordinates.length;
-		coordinates_copy = new int[length];
-		for (int j = 0; j < length; j++) {
-			coordinates_copy[j] = coordinates[j];
-		}
-		for (int j = 0; j < length; j++) {
-			where_is_it.put(j, j);
-		}
-		for (int j = 0; j < length; j++) {
-			int number_to_move = coordinates_copy[j];
-			int place = where_is_it.get(j);
-			if (number_to_move < 0) {
-				move_smaller_zero(length, number_to_move, place);
-			} else {
-				if (number_to_move + place > length) {
-					move_left(length, number_to_move, place);
+
+		for (Number current : coordinates_as_struct) {
+			int number_to_move = (current.value);
+			int place = current.current_position;
+			int new_place = place + number_to_move;
+			while (true) {
+				if (new_place <= 0) {
+					new_place = new_place + (length - 1);
+				} else if (new_place > length - 1) {
+					new_place = new_place - (length - 1);
 				} else {
-					move(length, number_to_move, place);
+					break;
 				}
 			}
+			if (place < new_place) { // new place is right from the old place -> shift the elements to the left side
+				for (Number item : coordinates_as_struct) {
+					if (place < item.current_position && item.current_position <= new_place) {
+						item.current_position--;
+					}
+				}
+			} else if (new_place < place) {
+				for (Number item : coordinates_as_struct) {
+					if (new_place <= item.current_position && item.current_position < place) {
+						item.current_position++;
+					}
+				}
+			}
+			current.current_position = new_place;
 		}
+
 		int place_of_zero = 0;
 		for (int j = 0; j < length; j++) {
-			if (coordinates[j] == 0) {
-				place_of_zero = j;
+			if (coordinates_as_struct[j].value == 0) {
+				place_of_zero = coordinates_as_struct[j].current_position;
 			}
 		}
-		int place_onethousand = (place_of_zero + 1000) % length;
-		int place_twothousand = (place_of_zero + 2000) % length;
-		int place_threethousand = (place_of_zero + 3000) % length;
-		return coordinates[place_onethousand] + coordinates[place_twothousand] + coordinates[place_threethousand];
-	}
-
-	private void move_smaller_zero(int length, int number_to_move, int place) {
-		int new_place = (place + number_to_move);
-		if (new_place <= 0) {
-			new_place = (place + number_to_move) % (length - 1) + length - 1;
-		}
-		int original_position_of_current_number = place;
-		for (int l = 0; l < length; l++) {
-			if (where_is_it.get(l) == place) {
-				original_position_of_current_number = l;
+		int place_onethousand = (place_of_zero + (1000 % length));
+		int place_twothousand = (place_of_zero + (2000 % length));
+		int place_threethousand = (place_of_zero + (3000 % length));
+		while (true) {
+			if (place_onethousand > length - 1)
+				place_onethousand -= length;
+			else
 				break;
-			}
 		}
-		for (int k = place; k < new_place; k++) {
-			coordinates[k] = coordinates[k + 1];
-			for (int l = 0; l < length; l++) {
-				if (where_is_it.get(l) == k + 1) {
-					where_is_it.put(l, k);
-					break;
-				}
-			}
-		}
-		coordinates[new_place] = number_to_move;
-		where_is_it.put(original_position_of_current_number, new_place);
-	}
-
-	private void move_left(int length, int number_to_move, int place) {
-		int new_place = calc_new_place(place + number_to_move + 1, length);
-		int temp_place = place;
-		for (int l = 0; l < length; l++) {
-			if (where_is_it.get(l) == place) {
-				temp_place = l;
+		while (true) {
+			if (place_twothousand > length - 1)
+				place_twothousand -= length;
+			else
 				break;
-			}
 		}
-		for (int k = place; k > new_place; k--) {
-			coordinates[k] = coordinates[k - 1];
-			for (int l = 0; l < length; l++) {
-				if (where_is_it.get(l) == k - 1) {
-					where_is_it.put(l, k);
-					break;
-				}
-			}
-		}
-		coordinates[new_place] = number_to_move;
-		where_is_it.put(temp_place, new_place);
-	}
-
-	private void move(int length, int number_to_move, int place) {
-		int new_place = calc_new_place(place + number_to_move, length);
-		int temp_place = place;
-		for (int l = 0; l < length ; l++) {
-			if (where_is_it.get(l) == place) {
-				temp_place = l;
+		while (true) {
+			if (place_threethousand > length - 1)
+				place_threethousand -= length;
+			else
 				break;
-			}
 		}
-		for (int k = place; k < new_place; k++) {
-			coordinates[k] = coordinates[k + 1];
-			for (int l = 0; l < length ; l++) {
-				if (where_is_it.get(l) == k + 1) {
-					where_is_it.put(l, k);
-					break;
-				}
-			}
-		}
-		coordinates[new_place] = number_to_move;
-		where_is_it.put(temp_place, new_place);
-	}
+		int value_onethousend = 0;
+		int value_twothousend = 0;
+		int value_threethousend = 0;
 
-	private int calc_new_place(int place, int length) {
-		if (place >= length) {
-			return place % length;
+		for (Number item : coordinates_as_struct) {
+			if (item.current_position == place_onethousand)
+				value_onethousend = item.value;
+			if (item.current_position == place_twothousand)
+				value_twothousend = item.value;
+			if (item.current_position == place_threethousand)
+				value_threethousend = item.value;
 		}
-		while (place < 0) {
-			place += length;
-		}
-		return place;
+		return value_onethousend + value_twothousend + value_threethousend;
 	}
 
 	public int solvePart2(List<String> dataList) {

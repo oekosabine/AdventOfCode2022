@@ -43,7 +43,7 @@ class TestDay20 {
 		Day20 testInstance = new Day20();
 		List<String> testDaten = testInstance
 				.readData("C:\\Users\\boehm\\eclipse-workspace\\AdventOfCode2022\\src\\day20\\input.txt");
-		assertTrue(testInstance.solvePart1(testDaten) == 528);
+		assertTrue(testInstance.solvePart1(testDaten) == 2203);
 		assertTrue(testInstance.solvePart2(testDaten) == 522);
 	}
 
