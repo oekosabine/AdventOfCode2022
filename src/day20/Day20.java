@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import org.junit.jupiter.params.shadow.com.univocity.parsers.fixed.FixedWidthFieldLengths;
+
 public class Day20 {
 
 	public static void main(String[] args) {
@@ -61,12 +63,12 @@ public class Day20 {
 			int number_to_move = coordinates_copy[j];
 			int place = where_is_it.get(j);
 			if (number_to_move < 0) {
-				move(j, length, length + number_to_move - 1, place);
+				move_smaller_zero(length, number_to_move, place);
 			} else {
 				if (number_to_move + place > length) {
-					move_left(j, length, number_to_move, place);
+					move_left(length, number_to_move, place);
 				} else {
-					move(j, length, number_to_move, place);
+					move(length, number_to_move, place);
 				}
 			}
 		}
@@ -82,48 +84,73 @@ public class Day20 {
 		return coordinates[place_onethousand] + coordinates[place_twothousand] + coordinates[place_threethousand];
 	}
 
-	private void move_left(int j, int length, int number_to_move, int place) {
-		for (int k = 0; k < length - number_to_move - 1; k++) {
-			int other_place = calc_new_place(place - k, length);
-			int temp = coordinates[other_place];
-			int new_place = calc_new_place(place - k - 1, length);
-			coordinates[other_place] = coordinates[new_place];
-			coordinates[new_place] = temp;
-			where_is_it(new_place, other_place);
+	private void move_smaller_zero(int length, int number_to_move, int place) {
+		int new_place = (place + number_to_move);
+		if (new_place <= 0) {
+			new_place = (place + number_to_move) % (length - 1) + length - 1;
 		}
-	}
-
-	private void move(int j, int length, int number_to_move, int place) {
-		for (int k = 0; k < number_to_move; k++) {
-			int other_place = calc_new_place(place + k, length);
-			int temp = coordinates[other_place];
-			int new_place = calc_new_place(place + k + 1, length);
-			coordinates[other_place] = coordinates[new_place];
-			coordinates[new_place] = temp;
-			where_is_it(new_place, other_place);
-		}
-
-	}
-
-	private void where_is_it(int new_place, int other_place) {
-		int where_is_new = 0;
-		int where_is_other = 0;
-		boolean new_is_new = false;
-		boolean other_is_new = false;
-		for (int l = 0; (l < where_is_it.size()); l++) {
-			if (where_is_it.get(l) == new_place) {
-				where_is_new = l;
-				new_is_new = true;
-			}
-			if (where_is_it.get(l) == other_place) {
-				where_is_other = l;
-				other_is_new = true;
-			}
-			if (new_is_new && other_is_new)
+		int original_position_of_current_number = place;
+		for (int l = 0; l < length; l++) {
+			if (where_is_it.get(l) == place) {
+				original_position_of_current_number = l;
 				break;
+			}
 		}
-		where_is_it.put(where_is_new, other_place);
-		where_is_it.put(where_is_other, new_place);
+		for (int k = place; k < new_place; k++) {
+			coordinates[k] = coordinates[k + 1];
+			for (int l = 0; l < length; l++) {
+				if (where_is_it.get(l) == k + 1) {
+					where_is_it.put(l, k);
+					break;
+				}
+			}
+		}
+		coordinates[new_place] = number_to_move;
+		where_is_it.put(original_position_of_current_number, new_place);
+	}
+
+	private void move_left(int length, int number_to_move, int place) {
+		int new_place = calc_new_place(place + number_to_move + 1, length);
+		int temp_place = place;
+		for (int l = 0; l < length; l++) {
+			if (where_is_it.get(l) == place) {
+				temp_place = l;
+				break;
+			}
+		}
+		for (int k = place; k > new_place; k--) {
+			coordinates[k] = coordinates[k - 1];
+			for (int l = 0; l < length; l++) {
+				if (where_is_it.get(l) == k - 1) {
+					where_is_it.put(l, k);
+					break;
+				}
+			}
+		}
+		coordinates[new_place] = number_to_move;
+		where_is_it.put(temp_place, new_place);
+	}
+
+	private void move(int length, int number_to_move, int place) {
+		int new_place = calc_new_place(place + number_to_move, length);
+		int temp_place = place;
+		for (int l = 0; l < length ; l++) {
+			if (where_is_it.get(l) == place) {
+				temp_place = l;
+				break;
+			}
+		}
+		for (int k = place; k < new_place; k++) {
+			coordinates[k] = coordinates[k + 1];
+			for (int l = 0; l < length ; l++) {
+				if (where_is_it.get(l) == k + 1) {
+					where_is_it.put(l, k);
+					break;
+				}
+			}
+		}
+		coordinates[new_place] = number_to_move;
+		where_is_it.put(temp_place, new_place);
 	}
 
 	private int calc_new_place(int place, int length) {
