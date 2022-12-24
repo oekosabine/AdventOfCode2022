@@ -40,12 +40,11 @@ public class Day20 {
 	}
 
 	private class Number {
-		int value;
-		int original_position;
-		int current_position;
+		int value; // value of the number
+		int current_position; // current position of the number
 	}
 
-	Number coordinates_as_struct[];
+	Number coordinates_as_struct[]; // index in the array equals original position.
 
 	public int solvePart1(List<String> dataList) {
 		int length = dataList.size();
@@ -55,81 +54,82 @@ public class Day20 {
 			Integer number = Integer.parseInt(line);
 			Number item = new Number();
 			item.current_position = i;
-			item.original_position = i;
 			item.value = number;
 			coordinates_as_struct[i] = item;
 			i++;
 		}
 
 		for (Number current : coordinates_as_struct) {
-			int number_to_move = (current.value);
-			int place = current.current_position;
-			int new_place = place + number_to_move;
-			while (true) {
-				if (new_place <= 0) {
-					new_place = new_place + (length - 1);
-				} else if (new_place > length - 1) {
-					new_place = new_place - (length - 1);
-				} else {
-					break;
-				}
-			}
-			if (place < new_place) { // new place is right from the old place -> shift the elements to the left side
-				for (Number item : coordinates_as_struct) {
-					if (place < item.current_position && item.current_position <= new_place) {
-						item.current_position--;
-					}
-				}
-			} else if (new_place < place) {
-				for (Number item : coordinates_as_struct) {
-					if (new_place <= item.current_position && item.current_position < place) {
-						item.current_position++;
-					}
-				}
-			}
+			int value = (current.value);
+			int old_place = current.current_position;
+			int new_place = calc_new_place(old_place, value, length);
+			move_elements(old_place, new_place);
 			current.current_position = new_place;
 		}
 
+		int[] place_of_thousands = calc_place_of_thousands(length);
+		for (int place : place_of_thousands) {
+			while (place > length - 1) {
+				place -= length;
+			}
+		}
+
+		List<Integer> value_thousands = new ArrayList<Integer>();
+
+		for (Number item : coordinates_as_struct) {
+			for (int place : place_of_thousands) {
+				if (item.current_position == place)
+					value_thousands.add(item.value); // values corresponding to the indeces 1000, 2000, 3000
+			}
+		}
+		int sum = 0;
+		for (int item : value_thousands) {
+			sum += item;
+		}
+		return sum;
+	}
+
+	private int[] calc_place_of_thousands(int length) {
 		int place_of_zero = 0;
 		for (int j = 0; j < length; j++) {
 			if (coordinates_as_struct[j].value == 0) {
 				place_of_zero = coordinates_as_struct[j].current_position;
 			}
 		}
-		int place_onethousand = (place_of_zero + (1000 % length));
-		int place_twothousand = (place_of_zero + (2000 % length));
-		int place_threethousand = (place_of_zero + (3000 % length));
-		while (true) {
-			if (place_onethousand > length - 1)
-				place_onethousand -= length;
-			else
-				break;
-		}
-		while (true) {
-			if (place_twothousand > length - 1)
-				place_twothousand -= length;
-			else
-				break;
-		}
-		while (true) {
-			if (place_threethousand > length - 1)
-				place_threethousand -= length;
-			else
-				break;
-		}
-		int value_onethousend = 0;
-		int value_twothousend = 0;
-		int value_threethousend = 0;
+		int[] place = new int[3];
+		place[0] = (place_of_zero + 1000) % length;
+		place[1] = (place_of_zero + 2000) % length;
+		place[2] = (place_of_zero + 3000) % length;
+		return place;
+	}
 
-		for (Number item : coordinates_as_struct) {
-			if (item.current_position == place_onethousand)
-				value_onethousend = item.value;
-			if (item.current_position == place_twothousand)
-				value_twothousend = item.value;
-			if (item.current_position == place_threethousand)
-				value_threethousend = item.value;
+	private void move_elements(int old_place, int new_place) {
+		if (old_place < new_place) { // new place is on the right of the old place -> shift the elements to the left
+										// side
+			for (Number item : coordinates_as_struct) {
+				if (old_place < item.current_position && item.current_position <= new_place) {
+					item.current_position--;
+				}
+			}
+		} else if (new_place < old_place) { // shift elements to the right side
+			for (Number item : coordinates_as_struct) {
+				if (new_place <= item.current_position && item.current_position < old_place) {
+					item.current_position++;
+				}
+			}
 		}
-		return value_onethousend + value_twothousend + value_threethousend;
+	}
+
+	private int calc_new_place(int old_place, int value, int length) {
+		int new_place = old_place + value;
+		while (new_place <= 0 || new_place > length - 1) { // new_place is outside range
+			if (new_place <= 0) {
+				new_place = new_place + (length - 1);
+			} else if (new_place > length - 1) {
+				new_place = new_place - (length - 1);
+			}
+		}
+		return new_place;
 	}
 
 	public int solvePart2(List<String> dataList) {

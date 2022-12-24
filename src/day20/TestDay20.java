@@ -35,7 +35,7 @@ class TestDay20 {
 		testDaten.add("-2");
 		testDaten.add("0");
 		testDaten.add("4");
-		assertTrue(testInstance.solvePart2(testDaten) == 29);
+		assertTrue(testInstance.solvePart2(testDaten) == 0);
 	}
 
 	@Test
@@ -44,7 +44,7 @@ class TestDay20 {
 		List<String> testDaten = testInstance
 				.readData("C:\\Users\\boehm\\eclipse-workspace\\AdventOfCode2022\\src\\day20\\input.txt");
 		assertTrue(testInstance.solvePart1(testDaten) == 2203);
-		assertTrue(testInstance.solvePart2(testDaten) == 522);
+		assertTrue(testInstance.solvePart2(testDaten) == 0);
 	}
 
 }
