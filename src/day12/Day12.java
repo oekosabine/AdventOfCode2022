@@ -170,10 +170,7 @@ public class Day12 {
 		HashMap<String, String> predecessors = new HashMap<>();
 		HashSet<String> Q = new HashSet<>();
 		for (int j = 0; j < rows; j++) {
-			String line = dataList.get(j);
 			for (int i = 0; i < width; i++) {
-				Character charAtPos = line.charAt(i);
-				arrayOfHeights[j][i] = charAtPos;
 				String member = "(" + j + "," + i + ")";
 				distances.put(member, Integer.MAX_VALUE);
 				predecessors.put(member, null);
