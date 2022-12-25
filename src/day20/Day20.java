@@ -33,14 +33,14 @@ public class Day20 {
 
 	private void solve(String inputData) throws IOException {
 		List<String> dataList = readData(inputData);
-		int solution = solvePart1(dataList);
+		long solution = solvePart1(dataList);
 		System.out.println("Solution for part 1: " + solution);
 		solution = solvePart2(dataList);
 		System.out.println("Solution for part 2: " + solution);
 	}
 
 	private class Number {
-		int value; // value of the number
+		long value; // value of the number
 		int current_position; // current position of the number
 	}
 
@@ -60,7 +60,7 @@ public class Day20 {
 		}
 
 		for (Number current : coordinates_as_struct) {
-			int value = (current.value);
+			long value = (current.value);
 			int old_place = current.current_position;
 			int new_place = calc_new_place(old_place, value, length);
 			move_elements(old_place, new_place);
@@ -74,16 +74,16 @@ public class Day20 {
 			}
 		}
 
-		List<Integer> value_thousands = new ArrayList<Integer>();
+		List<Long> value_thousands = new ArrayList<Long>();
 
 		for (Number item : coordinates_as_struct) {
 			for (int place : place_of_thousands) {
 				if (item.current_position == place)
-					value_thousands.add(item.value); // values corresponding to the indeces 1000, 2000, 3000
+					value_thousands.add(item.value); // values corresponding to the indices 1000, 2000, 3000
 			}
 		}
 		int sum = 0;
-		for (int item : value_thousands) {
+		for (long item : value_thousands) {
 			sum += item;
 		}
 		return sum;
@@ -120,20 +120,60 @@ public class Day20 {
 		}
 	}
 
-	private int calc_new_place(int old_place, int value, int length) {
-		int new_place = old_place + value;
-		while (new_place <= 0 || new_place > length - 1) { // new_place is outside range
-			if (new_place <= 0) {
-				new_place = new_place + (length - 1);
-			} else if (new_place > length - 1) {
-				new_place = new_place - (length - 1);
-			}
+	private int calc_new_place(int old_place, long value, int length) {
+		long new_place = old_place + value;
+		if (new_place <= 0) {
+			new_place = new_place % (length - 1) + length - 1;
+		} else if (new_place > length - 1) {
+			new_place = new_place % (length - 1);
 		}
-		return new_place;
+		return (int) new_place;
 	}
 
-	public int solvePart2(List<String> dataList) {
-		return 0;
+	public long solvePart2(List<String> dataList) {
+		int decryption_key = 811589153;
+		int length = dataList.size();
+		coordinates_as_struct = new Number[length];
+		int i = 0;
+		for (String line : dataList) {
+			Long number = Long.parseLong(line);
+			Number item = new Number();
+			item.current_position = i;
+			item.value = number * decryption_key;
+			coordinates_as_struct[i] = item;
+			i++;
+		}
+
+		for (int j = 0; j < 10; j++) {
+			for (Number current : coordinates_as_struct) {
+				long value = (current.value);
+				int old_place = current.current_position;
+				int new_place = calc_new_place(old_place, value, length);
+				move_elements(old_place, new_place);
+				current.current_position = new_place;
+			}
+		}
+
+		int[] place_of_thousands = calc_place_of_thousands(length);
+		for (int place : place_of_thousands) {
+			while (place > length - 1) {
+				place -= length;
+			}
+		}
+
+		List<Long> value_thousands = new ArrayList<Long>();
+
+		for (Number item : coordinates_as_struct) {
+			for (int place : place_of_thousands) {
+				if (item.current_position == place)
+					value_thousands.add(item.value); // values corresponding to the indices 1000, 2000, 3000
+			}
+		}
+		long sum = 0;
+		for (long item : value_thousands) {
+			sum += item;
+		}
+		return sum;
 	}
 
 }
