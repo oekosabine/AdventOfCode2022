@@ -37,31 +37,30 @@ public class Day7 {
 	}
 
 	HashMap<String, Long> file_sizes = new HashMap<String, Long>();
+	HashMap<String, Long> directory_sizes = new HashMap<String, Long>();
+	List<String> directories = new ArrayList<String>();
 
 	long solvePart1(List<String> dataList) {
-		HashMap<String, Long> directory_sizes = new HashMap<String, Long>();
-		List<String> directories = new ArrayList<String>();
 		String directory = "";
 		for (int i = 0; i < dataList.size(); i++) {
 			String line = dataList.get(i);
 			String[] line_splittet = line.split(" ");
 			if (line_splittet[0].equals("$")) {
 				if (line_splittet[1].equals("cd")) {
-					if (!line_splittet[2].equals("..")) {
-						if (!line_splittet[2].equals("/"))
-							directory += line_splittet[2] + "/";
-						else
-							directory += line_splittet[2];
-						directories.add(directory);
-					} else {
+					if (line_splittet[2].equals("..")) {
 						String[] directory_woslash = directory.split("/");
 						directory = "/";
 						for (int j = 0; j < directory_woslash.length - 1; j++) {
 							directory += directory_woslash[j] + "/";
 						}
+					} else {
+						directory += line_splittet[2];
+						if (!line_splittet[2].equals("/"))
+							directory += "/";
+						directories.add(directory);
 					}
 				}
-			} else if (!line_splittet[0].equals("dir")) { // add filesize
+			} else if (!line_splittet[0].equals("dir")) { // add file size
 				String filename = directory + line_splittet[1];
 				long filesize = Integer.parseInt(line_splittet[0]);
 				file_sizes.put(filename, filesize);
@@ -87,7 +86,22 @@ public class Day7 {
 		return sum;
 	}
 
-	int solvePart2(List<String> dataList) {
-		return 0;
+	long solvePart2(List<String> dataList) {
+		long solution = solvePart1(dataList);
+		long total_space = 70000000;
+		long space_needed = 30000000;
+		long all_directories_sum = directory_sizes.get("/");
+		long unused_space = total_space - all_directories_sum;
+		long temp = 0;
+		String store_directory = "";
+		long store_size = all_directories_sum;
+		for (String dir : directory_sizes.keySet()) {
+			temp = total_space - all_directories_sum + directory_sizes.get(dir);
+			if (temp > space_needed && directory_sizes.get(dir) < store_size) {
+				store_directory = dir;
+				store_size = directory_sizes.get(dir);
+			}
+		}
+		return store_size;
 	}
 }
