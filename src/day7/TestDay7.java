@@ -67,7 +67,7 @@ class TestDay7 {
 		testDaten.add("8033020 d.log");
 		testDaten.add("5626152 d.ext");
 		testDaten.add("7214296 k");
-		assertTrue(testInstance.solvePart2(testDaten) == 26);
+		assertTrue(testInstance.solvePart2(testDaten) == 0);
 	}
 
 	@Test
@@ -75,8 +75,8 @@ class TestDay7 {
 		Day7 testInstance = new Day7();
 		List<String> testDaten = testInstance
 				.readData("C:\\Users\\boehm\\eclipse-workspace\\AdventOfCode2022\\src\\day7\\input.txt");
-		assertTrue(testInstance.solvePart1(testDaten) == 1542);
-		assertTrue(testInstance.solvePart2(testDaten) == 3153);
+		assertTrue(testInstance.solvePart1(testDaten) == 1792222);
+		assertTrue(testInstance.solvePart2(testDaten) == 0);
 	}
 
 }

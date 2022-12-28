@@ -36,51 +36,43 @@ public class Day7 {
 		System.out.println("Solution for part 2: " + solution);
 	}
 
-	HashMap<String, ArrayList<String>> directory_content = new HashMap<String, ArrayList<String>>();
 	HashMap<String, Long> file_sizes = new HashMap<String, Long>();
-	HashMap<String, Long> directory_size = new HashMap<String, Long>();
 
 	long solvePart1(List<String> dataList) {
-		String directory = "/";
+		HashMap<String, Long> directory_sizes = new HashMap<String, Long>();
+		List<String> directories = new ArrayList<String>();
+		String directory = "";
 		for (int i = 0; i < dataList.size(); i++) {
 			String line = dataList.get(i);
-			if (line.charAt(0) == '$') { // command from me
-				if (line.equals("$ ls")) { // get the content of the current directory
-					// Name of the directory is one line above
-					String previous_line = dataList.get(i - 1);
-					if (previous_line.contains("$ cd ")) { // directory content
-						directory = (previous_line.split(" "))[2];
-					}
-					ArrayList<String> list = new ArrayList<String>();
-					for (int j = i + 1; j < dataList.size(); j++) { // below ls the content of the directory is given
-						String current_line = dataList.get(j);
-						if (current_line.contains("$"))
-							break;
-						if (current_line.contains("dir ")) // add directory name
-							list.add(current_line.split(" ")[1]);
-						else { // add filename
-							String filename = current_line.split(" ")[1];
-							list.add(filename);
-							long filesize = Integer.parseInt(current_line.split(" ")[0]);
-							file_sizes.put(filename, filesize);
+			String[] line_splittet = line.split(" ");
+			if (line_splittet[0].equals("$")) {
+				if (line_splittet[1].equals("cd")) {
+					if (!line_splittet[2].equals("..")) {
+						if (!line_splittet[2].equals("/"))
+							directory += line_splittet[2] + "/";
+						else
+							directory += line_splittet[2];
+						directories.add(directory);
+					} else {
+						String[] directory_woslash = directory.split("/");
+						directory = "/";
+						for (int j = 0; j < directory_woslash.length - 1; j++) {
+							directory += directory_woslash[j] + "/";
 						}
 					}
-					directory_content.put(directory, list);
 				}
+			} else if (!line_splittet[0].equals("dir")) { // add filesize
+				String filename = directory + line_splittet[1];
+				long filesize = Integer.parseInt(line_splittet[0]);
+				file_sizes.put(filename, filesize);
 			}
 		}
 
-		for (String dir : directory_content.keySet()) {
-			directory_size.put(dir, 0L);
-		}
-		for (String dir : directory_content.keySet()) {
-			long size = calc_directory_size(dir);
-			directory_size.put(dir, size);
-		}
 		long sum = 0;
-		for (String dir : directory_size.keySet()) {
-			long current_size = directory_size.get(dir);
-			if (current_size < 100000)
+		for (String dir : directories) {
+			long current_size = calc_directory_size(dir);
+			directory_sizes.put(dir, current_size);
+			if (current_size <= 100000)
 				sum += current_size;
 		}
 		return sum;
@@ -88,17 +80,9 @@ public class Day7 {
 
 	private long calc_directory_size(String dir) {
 		long sum = 0;
-		if (directory_content.containsKey(dir)) { // it is a directory
-			long dir_size = directory_size.get(dir);
-			if (dir_size != 0)
-				return dir_size;
-			else {
-				for (String item_inside : directory_content.get(dir)) {
-					sum += calc_directory_size(item_inside);
-				}
-			}
-		} else {
-			return file_sizes.get(dir);
+		for (String file : file_sizes.keySet()) {
+			if (file.contains(dir))
+				sum += file_sizes.get(file);
 		}
 		return sum;
 	}
