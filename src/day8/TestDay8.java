@@ -40,7 +40,7 @@ class TestDay8 {
 		List<String> testDaten = testInstance
 				.readData("C:\\Users\\boehm\\eclipse-workspace\\AdventOfCode2022\\src\\day8\\input.txt");
 		assertTrue(testInstance.solvePart1(testDaten) == 1823);
-		assertTrue(testInstance.solvePart2(testDaten) == 0);
+		assertTrue(testInstance.solvePart2(testDaten) == 211680);
 	}
 
 }

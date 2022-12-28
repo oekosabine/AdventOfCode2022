@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class Day8 {
 
@@ -32,10 +34,43 @@ public class Day8 {
 		System.out.println("Solution for part 2: " + solution);
 	}
 
+	public class Tupel {
+		int index_x;
+		int index_y;
+
+		public Tupel(int x, int y) {
+			index_x = x;
+			index_y = y;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Objects.hash(index_x, index_y);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Tupel other = (Tupel) obj;
+			return index_x == other.index_x && index_y == other.index_y;
+		}
+	}
+
 	int solvePart1(List<String> dataList) {
-		int length = dataList.get(0).length();
-		int size = dataList.size();
-		Integer[][] tree_matrix = new Integer[size][length];
+		HashMap<Tupel, Boolean> tree_is_visible = new HashMap<Tupel, Boolean>();
+		Integer[][] tree_matrix;
+		int size, length;
+		length = dataList.get(0).length();
+		size = dataList.size();
+		tree_matrix = new Integer[size][length];
 		for (int i = 0; i < size; i++) {
 			String line = dataList.get(i);
 			for (int j = 0; j < length; j++) {
@@ -43,10 +78,9 @@ public class Day8 {
 				tree_matrix[i][j] = char_as_integer;
 			}
 		}
-		HashMap<String, Boolean> tree_is_visible = new HashMap<String, Boolean>();
 		for (int i = 0; i < size; i++) { // initialize with true: all trees are visible.
 			for (int j = 0; j < length; j++) {
-				String tree = "(" + i + "," + j + ")";
+				Tupel tree = new Tupel(i, j);
 				tree_is_visible.put(tree, true);
 			}
 		}
@@ -58,7 +92,7 @@ public class Day8 {
 				boolean invisible_j_smaller = false;
 				boolean invisible_j_greater = false;
 
-				String tree = "(" + i + "," + j + ")";
+				Tupel tree = new Tupel(i, j);
 				for (int i_smaller = 0; i_smaller < i; i_smaller++) {
 					if (tree_matrix[i_smaller][j] >= tree_matrix[i][j]) {
 						invisible_i_smaller = true; // not visible for smaller i
@@ -86,7 +120,7 @@ public class Day8 {
 		}
 
 		int sum_visible_trees = 0;
-		for (String item : tree_is_visible.keySet()) {
+		for (Tupel item : tree_is_visible.keySet()) {
 			if (tree_is_visible.get(item)) {
 				sum_visible_trees++;
 			}
@@ -95,6 +129,84 @@ public class Day8 {
 	}
 
 	int solvePart2(List<String> dataList) {
-		return 0;
+		int length = dataList.get(0).length();
+		int size = dataList.size();
+		Integer[][] tree_matrix = new Integer[size][length];
+		for (int i = 0; i < size; i++) {
+			String line = dataList.get(i);
+			for (int j = 0; j < length; j++) {
+				Integer char_as_integer = Integer.parseInt(String.valueOf(line.charAt(j)));
+				tree_matrix[i][j] = char_as_integer;
+			}
+		}
+		List<Tupel> all_trees = new ArrayList<Tupel>();
+		HashMap<Tupel, Integer> number_of_visible_trees_list = new HashMap<Tupel, Integer>();
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < length; j++) {
+				Tupel tree = new Tupel(i, j);
+				all_trees.add(tree);
+			}
+		}
+		for (Tupel tree : all_trees) {
+			int[] number_of_visible_trees = new int[4];
+			number_of_visible_trees[0] = 0;
+			number_of_visible_trees[1] = 0;
+			number_of_visible_trees[2] = 0;
+			number_of_visible_trees[3] = 0;
+
+			for (int i_smaller = tree.index_x - 1; i_smaller >= 0; i_smaller--) {
+				if (tree_matrix[i_smaller][tree.index_y] < tree_matrix[tree.index_x][tree.index_y]) {
+					// tree is visible
+					number_of_visible_trees[0]++;
+				}
+				if (tree_matrix[i_smaller][tree.index_y] >= tree_matrix[tree.index_x][tree.index_y]) {
+					// tree is visible, but nothing behind it
+					number_of_visible_trees[0]++;
+					break;
+				}
+			}
+			for (int i_greater = tree.index_x + 1; i_greater < size; i_greater++) {
+				if (tree_matrix[i_greater][tree.index_y] < tree_matrix[tree.index_x][tree.index_y]) {
+					// tree is visible
+					number_of_visible_trees[1]++;
+				}
+				if (tree_matrix[i_greater][tree.index_y] >= tree_matrix[tree.index_x][tree.index_y]) {
+					// tree is visible, but nothing behind it
+					number_of_visible_trees[1]++;
+					break;
+				}
+			}
+			for (int j_smaller = tree.index_y - 1; j_smaller >= 0; j_smaller--) {
+				if (tree_matrix[tree.index_x][j_smaller] < tree_matrix[tree.index_x][tree.index_y]) {
+					// tree is visible
+					number_of_visible_trees[2]++;
+				}
+				if (tree_matrix[tree.index_x][j_smaller] >= tree_matrix[tree.index_x][tree.index_y]) {
+					// tree is visible, but nothing behind it
+					number_of_visible_trees[2]++;
+					break;
+				}
+			}
+			for (int j_greater = tree.index_y + 1; j_greater < length; j_greater++) {
+				if (tree_matrix[tree.index_x][j_greater] < tree_matrix[tree.index_x][tree.index_y]) {
+					// tree is visible
+					number_of_visible_trees[3]++;
+				}
+				if (tree_matrix[tree.index_x][j_greater] >= tree_matrix[tree.index_x][tree.index_y]) {
+					// tree is visible, but nothing behind it
+					number_of_visible_trees[3]++;
+					break;
+				}
+			}
+			int product = number_of_visible_trees[0] * number_of_visible_trees[1] * number_of_visible_trees[2]
+					* number_of_visible_trees[3];
+			number_of_visible_trees_list.put(tree, product);
+		}
+		int result = 0;
+		for (int number : (number_of_visible_trees_list.values())) {
+			if (number > result)
+				result = number;
+		}
+		return result;
 	}
 }
