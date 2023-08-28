@@ -17,7 +17,7 @@ public class Day9 {
 	public static void main(String[] args) {
 		Day9 instanceOfTheDay = new Day9();
 		try {
-			instanceOfTheDay.solve("C:\\Users\\boehm\\eclipse-workspace\\AdventOfCode2022\\src\\day9\\input.txt");
+			instanceOfTheDay.solve("C:\\Users\\selig\\Documents\\GitHub\\AdventOfCode2022\\src\\day9\\input.txt");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -128,8 +128,9 @@ public class Day9 {
 	int solvePart1(List<String> dataList) {
 		List<Tupel> visited_coordinates = new ArrayList<Tupel>();
 		Tupel starting_point = new Tupel(0, 0);
-		Tupel place_of_head = new Tupel(0, 0);
-		Tupel place_of_tail = new Tupel(0, 0);
+		Tupel[] place_of_rope = new Tupel[2];
+		for (int i=0; i<2; i++)
+			place_of_rope[i]=new Tupel(0,0);
 		visited_coordinates.add(starting_point); // Starting point is (0,0)
 		for (String line : dataList) {
 			String[] splitted_line = line.split(" ");
@@ -137,41 +138,41 @@ public class Day9 {
 			int number_of_steps = Integer.parseInt(splitted_line[1]);
 			if (direction.equals("R")) {
 				for (int i = 0; i < number_of_steps; i++) {
-					place_of_head.index_x++;
-					if (!place_of_tail.nearby(place_of_head)) {
-						place_of_tail.moveto(place_of_head);
-						Tupel place_to_add = new Tupel(place_of_tail.index_x, place_of_tail.index_y);
+					place_of_rope[0].index_x++;
+					if (!place_of_rope[1].nearby(place_of_rope[0])) {
+						place_of_rope[1].moveto(place_of_rope[0]);
+						Tupel place_to_add = new Tupel(place_of_rope[1].index_x, place_of_rope[1].index_y);
 						visited_coordinates.add(place_to_add);
 					}
 				}
 			}
 			if (direction.equals("L")) {
 				for (int i = 0; i < number_of_steps; i++) {
-					place_of_head.index_x--;
-					if (!place_of_tail.nearby(place_of_head)) {
-						place_of_tail.moveto(place_of_head);
+					place_of_rope[0].index_x--;
+					if (!place_of_rope[1].nearby(place_of_rope[0])) {
+						place_of_rope[1].moveto(place_of_rope[0]);
 
-						Tupel place_to_add = new Tupel(place_of_tail.index_x, place_of_tail.index_y);
+						Tupel place_to_add = new Tupel(place_of_rope[1].index_x, place_of_rope[1].index_y);
 						visited_coordinates.add(place_to_add);
 					}
 				}
 			}
 			if (direction.equals("U")) {
 				for (int i = 0; i < number_of_steps; i++) {
-					place_of_head.index_y++;
-					if (!place_of_tail.nearby(place_of_head)) {
-						place_of_tail.moveto(place_of_head);
-						Tupel place_to_add = new Tupel(place_of_tail.index_x, place_of_tail.index_y);
+					place_of_rope[0].index_y++;
+					if (!place_of_rope[1].nearby(place_of_rope[0])) {
+						place_of_rope[1].moveto(place_of_rope[0]);
+						Tupel place_to_add = new Tupel(place_of_rope[1].index_x, place_of_rope[1].index_y);
 						visited_coordinates.add(place_to_add);
 					}
 				}
 			}
 			if (direction.equals("D")) {
 				for (int i = 0; i < number_of_steps; i++) {
-					place_of_head.index_y--;
-					if (!place_of_tail.nearby(place_of_head)) {
-						place_of_tail.moveto(place_of_head);
-						Tupel place_to_add = new Tupel(place_of_tail.index_x, place_of_tail.index_y);
+					place_of_rope[0].index_y--;
+					if (!place_of_rope[1].nearby(place_of_rope[0])) {
+						place_of_rope[1].moveto(place_of_rope[0]);
+						Tupel place_to_add = new Tupel(place_of_rope[1].index_x, place_of_rope[1].index_y);
 						visited_coordinates.add(place_to_add);
 					}
 				}
@@ -183,6 +184,73 @@ public class Day9 {
 	}
 
 	int solvePart2(List<String> dataList) {
-		return 0;
+		List<Tupel> visited_coordinates = new ArrayList<Tupel>();
+		Tupel starting_point = new Tupel(0, 0);
+		Tupel[] place_of_rope = new Tupel[10];
+		for (int i=0; i<10; i++)
+			place_of_rope[i]=new Tupel(0,0);
+		visited_coordinates.add(starting_point); // Starting point is (0,0)
+		for (String line : dataList) {
+			String[] splitted_line = line.split(" ");
+			String direction = splitted_line[0];
+			int number_of_steps = Integer.parseInt(splitted_line[1]);
+			if (direction.equals("R")) {
+				for (int i = 0; i < number_of_steps; i++) {
+					place_of_rope[0].index_x++;
+					for (int j=0; j<9; j++) {
+						if (!place_of_rope[j+1].nearby(place_of_rope[j])) {
+							place_of_rope[j+1].moveto(place_of_rope[j]);
+							}
+					}
+					Tupel place_to_add = new Tupel(place_of_rope[9].index_x, place_of_rope[9].index_y);
+					visited_coordinates.add(place_to_add);
+					
+				}
+			}
+			if (direction.equals("L")) {
+				for (int i = 0; i < number_of_steps; i++) {
+					place_of_rope[0].index_x--;
+					for (int j=0; j<9; j++) {
+						if (!place_of_rope[j+1].nearby(place_of_rope[j])) {
+							place_of_rope[j+1].moveto(place_of_rope[j]);
+						}
+					}
+					Tupel place_to_add = new Tupel(place_of_rope[9].index_x, place_of_rope[9].index_y);
+					visited_coordinates.add(place_to_add);
+
+				}
+			}
+			if (direction.equals("U")) {
+				for (int i = 0; i < number_of_steps; i++) {
+					place_of_rope[0].index_y++;
+					for (int j=0; j<9; j++) {
+						if (!place_of_rope[j+1].nearby(place_of_rope[j])) {
+							place_of_rope[j+1].moveto(place_of_rope[j]);
+						}
+					}
+					Tupel place_to_add = new Tupel(place_of_rope[9].index_x, place_of_rope[9].index_y);
+					visited_coordinates.add(place_to_add);
+
+				}
+			}
+			if (direction.equals("D")) {
+				for (int i = 0; i < number_of_steps; i++) {
+					place_of_rope[0].index_y--;
+					for (int j=0; j<9; j++) {
+						if (!place_of_rope[j+1].nearby(place_of_rope[j])) {
+							place_of_rope[j+1].moveto(place_of_rope[j]);
+							Tupel place_to_add = new Tupel(place_of_rope[9].index_x, place_of_rope[9].index_y);
+							visited_coordinates.add(place_to_add);
+						}
+					}
+					Tupel place_to_add = new Tupel(place_of_rope[9].index_x, place_of_rope[9].index_y);
+					visited_coordinates.add(place_to_add);
+
+				}
+			}
+		}
+		List<Tupel> listWithoutDuplicates = new ArrayList<>(new HashSet<>(visited_coordinates));
+		int result = listWithoutDuplicates.size();
+		return result;
 	}
 }

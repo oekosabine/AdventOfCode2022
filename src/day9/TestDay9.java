@@ -29,15 +29,15 @@ class TestDay9 {
 	void test_part2() {
 		Day9 testInstance = new Day9();
 		List<String> testDaten = new ArrayList<String>();
-		testDaten.add("R 4 ");
-		testDaten.add("U 4 ");
-		testDaten.add("L 3 ");
-		testDaten.add("D 1 ");
-		testDaten.add("R 4 ");
-		testDaten.add("D 1 ");
-		testDaten.add("L 5 ");
-		testDaten.add("R 2 ");
-		assertTrue(testInstance.solvePart2(testDaten) == 0);
+		testDaten.add("R 5 ");
+		testDaten.add("U 8 ");
+		testDaten.add("L 8 ");
+		testDaten.add("D 3 ");
+		testDaten.add("R 17 ");
+		testDaten.add("D 10 ");
+		testDaten.add("L 25 ");
+		testDaten.add("U 20 ");
+		assertTrue(testInstance.solvePart2(testDaten) == 36);
 	}
 
 	@Test
@@ -46,7 +46,7 @@ class TestDay9 {
 		List<String> testDaten = testInstance
 				.readData("C:\\Users\\boehm\\eclipse-workspace\\AdventOfCode2022\\src\\day9\\input.txt");
 		assertTrue(testInstance.solvePart1(testDaten) == 6190);
-		assertTrue(testInstance.solvePart2(testDaten) == 0);
+		assertTrue(testInstance.solvePart2(testDaten) == 36);
 	}
 
 }
