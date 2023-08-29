@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import day8.Day8.Tupel;
 
@@ -104,21 +105,42 @@ public class Day9 {
 					this.index_x = other.index_x + 1;
 				}
 			} else {
-				if (this.index_x - other.index_x == 2) {
+				if (this.index_x - other.index_x == 2 && (this.index_y - other.index_y == 2)) {
+					this.index_x--;
+					this.index_y--;
+				}
+				else if (this.index_x - other.index_x == 2 && (this.index_y - other.index_y == -2)) {
+					this.index_x--;
+					this.index_y++;
+				}
+				else if (this.index_x - other.index_x == -2 && (this.index_y - other.index_y == -2)) {
+					this.index_x++;
+					this.index_y++;
+				}
+				else if (this.index_x - other.index_x == -2 && (this.index_y - other.index_y == 2)) {
+					this.index_x++;
+					this.index_y--;
+				}				
+				else if (this.index_x - other.index_x == 2)  {
 					this.index_x--;
 					this.index_y = other.index_y;
 				}
-				if (this.index_x - other.index_x == -2) {
+				else if (this.index_x - other.index_x == -2) {
 					this.index_x++;
 					this.index_y = other.index_y;
 				}
-				if (this.index_y - other.index_y == 2) {
+				else if (this.index_y - other.index_y == 2) {
 					this.index_y--;
 					this.index_x = other.index_x;
 				}
-				if (this.index_y - other.index_y == -2) {
+				else if (this.index_y - other.index_y == -2) {
 					this.index_y++;
 					this.index_x = other.index_x;
+				}
+				else {					
+					System.out.println("Fall vergessen: ");
+					System.out.println("this= (" + this.index_x + "," + this.index_y+ ")");
+					System.out.println("other= (" + other.index_x + "," + other.index_y+ ")");					
 				}
 
 			}
@@ -184,7 +206,7 @@ public class Day9 {
 	}
 
 	int solvePart2(List<String> dataList) {
-		List<Tupel> visited_coordinates = new ArrayList<Tupel>();
+		Set<Tupel> visited_coordinates = new HashSet<>();
 		Tupel starting_point = new Tupel(0, 0);
 		Tupel[] place_of_rope = new Tupel[10];
 		for (int i=0; i<10; i++)
@@ -204,7 +226,6 @@ public class Day9 {
 					}
 					Tupel place_to_add = new Tupel(place_of_rope[9].index_x, place_of_rope[9].index_y);
 					visited_coordinates.add(place_to_add);
-					
 				}
 			}
 			if (direction.equals("L")) {
@@ -249,8 +270,7 @@ public class Day9 {
 				}
 			}
 		}
-		List<Tupel> listWithoutDuplicates = new ArrayList<>(new HashSet<>(visited_coordinates));
-		int result = listWithoutDuplicates.size();
+		int result = visited_coordinates.size();
 		return result;
 	}
 }
