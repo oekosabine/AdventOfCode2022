@@ -44,9 +44,9 @@ class TestDay9 {
 	void test_refactor() throws IOException {
 		Day9 testInstance = new Day9();
 		List<String> testDaten = testInstance
-				.readData("C:\\Users\\boehm\\eclipse-workspace\\AdventOfCode2022\\src\\day9\\input.txt");
+				.readData("C:\\Users\\selig\\Documents\\GitHub\\AdventOfCode2022\\src\\day9\\input.txt");
 		assertTrue(testInstance.solvePart1(testDaten) == 6190);
-		assertTrue(testInstance.solvePart2(testDaten) == 36);
+		assertTrue(testInstance.solvePart2(testDaten) == 2516);
 	}
 
 }
