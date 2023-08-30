@@ -18,16 +18,17 @@ class TestDay10 {
 	}
 
 	@Test
-	void test_part2() {
+	void test_part2() throws IOException {
 		Day10 testInstance = new Day10();
-		List<String> testDaten = new ArrayList<String>();
-		testDaten.add("Sabqponm");
-		testDaten.add("abcryxxl");
-		testDaten.add("accszExk");
-		testDaten.add("acctuvwj");
-		testDaten.add("abdefghi");
-		assertTrue(testInstance.solvePart2(testDaten) == 29);
-	}
+		List<String> testDaten = testInstance.readData("C:\\Users\\selig\\Documents\\GitHub\\AdventOfCode2022\\src\\day10\\input_testdata.txt");
+		String[] solution = testInstance.solvePart2(testDaten);
+		assertTrue(solution[0].equals("##..##..##..##..##..##..##..##..##..##.."));
+		assertTrue(solution[1].equals("###...###...###...###...###...###...###."));
+		assertTrue(solution[2].equals("####....####....####....####....####...."));
+		assertTrue(solution[3].equals("#####.....#####.....#####.....#####....."));
+		assertTrue(solution[4].equals("######......######......######......####"));
+		assertTrue(solution[5].equals("#######.......#######.......#######....."));
+	}	
 
 	@Test
 	void test_refactor() throws IOException {
@@ -35,7 +36,13 @@ class TestDay10 {
 		List<String> testDaten = testInstance
 				.readData("C:\\Users\\selig\\Documents\\GitHub\\AdventOfCode2022\\src\\day10\\input.txt");
 		assertTrue(testInstance.solvePart1(testDaten) == 15360);
-		assertTrue(testInstance.solvePart2(testDaten) == 522);
+		String[] solution = testInstance.solvePart2(testDaten);
+		assertTrue(solution[0].equals("###..#..#.#....#..#...##..##..####..##.."));
+		assertTrue(solution[1].equals("#..#.#..#.#....#..#....#.#..#....#.#..#."));
+		assertTrue(solution[2].equals("#..#.####.#....####....#.#......#..#..#."));
+		assertTrue(solution[3].equals("###..#..#.#....#..#....#.#.##..#...####."));
+		assertTrue(solution[4].equals("#....#..#.#....#..#.#..#.#..#.#....#..#."));
+		assertTrue(solution[5].equals("#....#..#.####.#..#..##...###.####.#..#."));
 	}
 
 }

@@ -33,8 +33,10 @@ public class Day10 {
 		List<String> dataList = readData(inputData);
 		int solution = solvePart1(dataList);
 		System.out.println("Solution for part 1: " + solution);
-		solution = solvePart2(dataList);
-		System.out.println("Solution for part 2: " + solution);
+		String[] solution_string = solvePart2(dataList);
+		System.out.println("Solution for part 2: ");
+		for (int i=0; i<6; i++)
+			System.out.println(solution_string[i]);
 	}
 	
 	public int solvePart1(List<String> dataList) {
@@ -63,8 +65,44 @@ public class Day10 {
 		}
 		return signal_strength;
 	}
-
-	public int solvePart2(List<String> dataList) {
-		return 0;
+	String[] CRT = new String[240];
+	
+	private Boolean register_cycle_add(int cycle, int value) {
+		if (cycle > 240) return false;
+		if(value -1 == ((cycle-1) % 40) || value == ((cycle-1) % 40) || ((cycle-1) % 40) == value+1 ) {
+			CRT[cycle-1] = "#";
+		} else CRT[cycle-1] = ".";
+		return true;
+	}
+	
+	public String[] solvePart2(List<String> dataList) {
+		HashMap<Integer, Integer> cycle_and_value = new HashMap<Integer, Integer>();
+		int register_cycle = 0;
+		int register_value = 1;
+		cycle_and_value.put(register_cycle, register_value);
+		for (String line : dataList) {
+		if (line.equals("noop")) {
+			register_cycle++;
+			register_cycle_add(register_cycle, register_value);
+			cycle_and_value.put(register_cycle, register_value);
+		}
+		else {
+			String[] lineSplittet = line.split(" ");
+			int valueToAdd = Integer.parseInt(lineSplittet[1]);
+			register_cycle++;
+			cycle_and_value.put(register_cycle, register_value);
+			register_cycle_add(register_cycle, register_value);
+			register_cycle++;
+			cycle_and_value.put(register_cycle, register_value);
+			register_cycle_add(register_cycle, register_value);
+			register_value += valueToAdd;
+			}
+		}
+		String[] lines = new String[6];
+		for (int j=0; j<6; j++) {
+			lines[j]="";
+			for (int i=j*40; i<(j+1)*40; i++)
+				lines[j] += CRT[i];}
+		return lines;
 	}
 }
